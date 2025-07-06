@@ -478,47 +478,47 @@ pub(crate) fn all_nodes<'b, 'a: 'b>(header: &'b Fdt<'a>) -> impl Iterator<Item =
     let mut parent_index = 0;
 
     core::iter::from_fn(move || {
-        println!("[1]");
+        println!("[all_nodes1]");
         if stream.is_empty() || done {
             return None;
         }
-        println!("[2]");
+        println!("[all_nodes2]");
         while stream.peek_u32()?.get() == FDT_END_NODE {
             parent_index -= 1;
             stream.skip(4);
         }
-        println!("[3]");
+        println!("[all_nodes3]");
         if stream.peek_u32()?.get() == FDT_END {
             done = true;
             return None;
         }
-        println!("[4]");
+        println!("[all_nodes4]");
         while stream.peek_u32()?.get() == FDT_NOP {
             stream.skip(4);
         }
-        println!("[5]");
+        println!("[all_nodes5]");
         match stream.u32()?.get() {
             FDT_BEGIN_NODE => {}
             _ => return None,
         }
-        println!("[6]");
+        println!("[all_nodes6]");
         let unit_name = CStr::new(stream.remaining()).expect("unit name C str").as_str().unwrap();
         let full_name_len = unit_name.len() + 1;
         skip_4_aligned(&mut stream, full_name_len);
-        println!("[7]");
+        println!("[all_nodes7]");
         let curr_node = stream.remaining();
-        println!("[8]");
+        println!("[all_nodes8]");
         parent_index += 1;
         parents[parent_index] = curr_node;
 
         while stream.peek_u32()?.get() == FDT_NOP {
             stream.skip(4);
         }
-        println!("[9]");
+        println!("[all_nodes9]");
         while stream.peek_u32()?.get() == FDT_PROP {
             NodeProperty::parse(&mut stream, header);
         }
-        println!("[10]");
+        println!("[all_nodes10]");
         Some(FdtNode {
             name: if unit_name.is_empty() { "/" } else { unit_name },
             header,
